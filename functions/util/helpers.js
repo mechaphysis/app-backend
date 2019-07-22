@@ -44,4 +44,10 @@ const validateLogin = (user) => {
     }
 }
 
-module.exports = {validateSignUp, validateLogin}
+//Img route url: 
+const getImgUrl = (storageBucket, img) => {
+    let storage_url = `https://firebasestorage.googleapis.com/v0/b/${storageBucket}/o/${img}?alt=media`
+    return storage_url
+}
+
+module.exports = {validateSignUp, validateLogin, getImgUrl}
