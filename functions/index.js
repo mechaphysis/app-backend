@@ -34,11 +34,40 @@ app.get('/posts', (req, resp) => {
     .catch(error => console.error('Something went wrong, check log: ', error))
 })
 
-//middleware
-app.post('/post', (req, resp) => {
+//middleware for protected routes
+const FBAuth = (req, resp, next) => {
+    let idToken
+    //Check first that token authorization exists
+    if(req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
+        idToken = req.headers.authorization.split('Bearer ')[1]
+    } else {
+        console.error('No token found')
+        return resp.status(403).json({error: 'Unauthorized'})
+    }
+
+    //verify token:
+    admin.auth().verifyIdToken(idToken)
+        .then(decodedToken => {
+            req.user = decodedToken;
+            return db.collection('users')
+                .where('userId', '==', req.user.uid)
+                .limit(1)
+                .get()
+        })
+        .then( data => {
+            req.user.handle = data.docs[0].data().handle
+            return next()
+        })
+        .catch(error => {
+            console.error('Something went wrong: ', error)
+            resp.status(403).json(error)
+        })
+}
+
+app.post('/post', FBAuth,(req, resp) => {
     const newPost = {
         body: req.body.body,
-        userHandle: req.body.userHandle,
+        userHandle: req.user.handle ,
         createdAt: new Date().toISOString()
     };
 
@@ -134,7 +163,7 @@ app.post('/login', (req, resp)=> {
 
     firebase.auth().signInWithEmailAndPassword(user.email, user.password)
         .then(data => {
-            return data.getIdToken()
+            return data.user.getIdToken()
         })
         .then( token => resp.json({ token }))
         .catch(error => {
