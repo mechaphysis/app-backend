@@ -1,17 +1,26 @@
 const functions = require('firebase-functions');
 const app = require('express')()
 const firebase = require('firebase') //client side lib
-
 const admin = require('firebase-admin')
-admin.initializeApp()
 
+//Constants and helpers: 
+const constants = require('./constants')
+
+admin.initializeApp()
 const db = admin.firestore()
 
 const firebaseConfig = require('./config.json')
-
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 
+
+//Helper functions
+const isEmpty = (string) => string.trim() === '' ? true : false
+//Regexp check:
+const isEmail = (string) =>  {
+    const regExp =  /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return string.match(regExp) ? true : false
+}
 
 app.get('/posts', (req, resp) => {
     db.collection('posts').get()
@@ -56,9 +65,29 @@ app.post('/signup', (req, resp) => {
         handle: req.body.handle,
 
     }
+
+    /**
+     * Server side validation (client side should have too in the future)
+     */
+
+    let errors = constants.EMPTY_OBJECT_READONLY
+    
+    if (isEmpty(newUser.email)){
+        errors.email = 'Cannot be empty'
+
+    } else if (!isEmail(newUser.email)){
+        errors.email = 'Must be a valid email address'
+    }
+
+    if (isEmpty(newUser.password)) errors.password = 'Cannot be empty'
+    if (newUser.password !== newUser.confirmPassword) errors.confirmPassword = 'Passwords must be the same'
+
+    if (isEmpty(newUser.handle)) errors.handle = 'Cannot be Empty'
+
+    if (Object.keys(errors).length > 0) resp.status(400).json({ errors })
     let token
     let userId //to retrieve later 
-    // Check if the user handle already exists
+    // Check if the user handle already exists in database
     db.doc(`/users/${newUser.handle}`).get()
         .then(docSnapShot => {
             if(docSnapShot.exists) {
