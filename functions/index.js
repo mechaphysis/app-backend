@@ -3,9 +3,6 @@ const app = require('express')()
 const firebase = require('firebase') //client side lib
 const admin = require('firebase-admin')
 
-//Constants and helpers: 
-const constants = require('./constants')
-
 admin.initializeApp()
 const db = admin.firestore()
 
@@ -37,6 +34,7 @@ app.get('/posts', (req, resp) => {
     .catch(error => console.error('Something went wrong, check log: ', error))
 })
 
+//middleware
 app.post('/post', (req, resp) => {
     const newPost = {
         body: req.body.body,
@@ -70,7 +68,7 @@ app.post('/signup', (req, resp) => {
      * Server side validation (client side should have too in the future)
      */
 
-    let errors = constants.EMPTY_OBJECT_READONLY
+    let errors = {}
     
     if (isEmpty(newUser.email)){
         errors.email = 'Cannot be empty'
@@ -120,5 +118,34 @@ app.post('/signup', (req, resp) => {
 
 })
 
+
+app.post('/login', (req, resp)=> {
+    const user = {
+        email: req.body.email,
+        password: req.body.password
+    }
+
+    //validate
+    let errors = {}
+    if(isEmpty(user.email)) errors.email = 'Cannot be Empty'
+    if (isEmpty(user.password)) errors.password = 'Cannot be empty'
+
+    if (Object.keys(errors).length > 0) resp.status(400).json({ errors })
+
+    firebase.auth().signInWithEmailAndPassword(user.email, user.password)
+        .then(data => {
+            return data.getIdToken()
+        })
+        .then( token => resp.json({ token }))
+        .catch(error => {
+            console.error('Something went wrong: ', error)
+            if (error.code === '/auth/password') {
+                return resp.status(403).json({general: 'Wrong credentials. Please try again'})
+            } else {
+                return resp.status(500).json({error: error})
+
+            }
+        })
+})
 // Specify here the region for deploying function routes. otherwise it defaults to us-central1 region
 exports.api = functions.region('europe-west1').https.onRequest(app)
