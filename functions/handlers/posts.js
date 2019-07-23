@@ -32,3 +32,28 @@ exports.addPost = (req, resp) => {
         resp.status(500).json({error: 'something went wrong'})
     })
 }
+
+exports.getPost = (req, resp) => {
+    let postData = {}
+    db.collection(`/posts/${req.params.postId}`).get()
+        .then( doc => {
+            if(!doc.exists) resp.status(404).json({error: 'Post not found'})
+
+            postData = doc.data()
+            postData.postId = doc.id
+
+            return collection('comments').where('postId', '==', req.param.postId).get()
+        })
+        .then( data => {
+            postData.comments = []
+
+            data.forEach( doc => {
+                postData.comments.push(doc.data())})
+            
+            return resp.json(postData)
+        })
+        .catch(error => {
+            console.error('Something went wrong: ', error)
+            resp.status(500).json({error: error.code})
+        })
+}
