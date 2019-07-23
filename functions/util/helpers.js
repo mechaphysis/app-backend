@@ -50,4 +50,20 @@ const getImgUrl = (storageBucket, img) => {
     return storage_url
 }
 
-module.exports = {validateSignUp, validateLogin, getImgUrl}
+const reduceUserDetails = (data) => {
+    let userDetails = {};
+
+    //Refactor:
+    if(!isEmpty(data.bio.trim())) userDetails.bio = data.bio;
+    
+    if(!isEmpty(data.website.trim())) userDetails.website = data.website.startsWith('http') ? 
+        data.website : 
+         `http://${data.website}`
+    
+    if(!isEmpty(data.location.trim())) userDetails.location = data.location;
+
+    return userDetails
+}
+
+
+module.exports = {validateSignUp, validateLogin, getImgUrl, reduceUserDetails}

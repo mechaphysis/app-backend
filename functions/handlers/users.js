@@ -1,5 +1,5 @@
 //Helper functions
-const {validateSignUp, validateLogin, getImgUrl } = require('../util/helpers')
+const {validateSignUp, validateLogin, getImgUrl, reduceUserDetails } = require('../util/helpers')
 
 //db utilities:
 const { db, admin } = require('../util/admin')
@@ -135,4 +135,12 @@ exports.uploadImage = (req, resp) => {
     })
 
     busboy.end(req.rawBody);
+}
+
+exports.addUserDetails = (req, resp) => {
+    let userDetails = reduceUserDetails(req.body)
+
+    db.doc(`/users/${req.user.handle}`).update(userDetails)
+        .then(() => resp.json({message: 'User details added succesfully'}))
+        .catch((error) => resp.status(500).json({ error: error.code}))
 }
