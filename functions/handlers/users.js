@@ -144,3 +144,32 @@ exports.addUserDetails = (req, resp) => {
         .then(() => resp.json({message: 'User details added succesfully'}))
         .catch((error) => resp.status(500).json({ error: error.code}))
 }
+
+
+exports.getAuthUser = (req, resp) => {
+    let userData = {}
+
+    db.doc(`/user/${req.user.handle}`).get()
+        .then( doc => {
+            if(doc.exists){ //Check otherwise crashes
+                userData.credentials = doc.data()
+                /**
+                 * If the collection doesn't exist it will return and empty array as response. 
+                 * because of the safe default of userData.likes
+                 *  */
+                return db.collection('likes').where('userHandle', '==', req.user.handle).get()
+            }
+        })
+        .then( data => {
+            userData.likes = []
+            data.forEach( doc => {
+                userData.likes.push(doc.data())
+            })
+
+            return resp.json(userData)
+        })
+        .catch(error => {
+            console.error('Something went wrong: ', error)
+            resp.status(500).json({error: error.code}),
+        })
+}
