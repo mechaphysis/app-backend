@@ -50,17 +50,23 @@ const getImgUrl = (storageBucket, img) => {
     return storage_url
 }
 
-const reduceUserDetails = (data) => {
-    let userDetails = {};
 
-    //Refactor:
-    if(!isEmpty(data.bio.trim())) userDetails.bio = data.bio;
+const checkWebSite = website.startsWith('http') ? website : `http://${website}`
+
+const addListOfInputs = (array) => array.forEach( (input) => {
+    if(!isEmpty(input)) input === website ? 
+        checkWebSite(input) :
+        userDetails[`${input}`] = input
+}
+)
+
+const reduceUserDetails = (data) => {
+
+    let userDetails =  {};
+
+    let {bio, website, location} = data
     
-    if(!isEmpty(data.website.trim())) userDetails.website = data.website.startsWith('http') ? 
-        data.website : 
-         `http://${data.website}`
-    
-    if(!isEmpty(data.location.trim())) userDetails.location = data.location;
+    addListOfInputs(bio, website, location)
 
     return userDetails
 }
