@@ -1,4 +1,5 @@
 const { db } = require('../util/admin')
+const { isEmpty } = require('../util/helpers')
 
 exports.getAllPosts = (req, resp) => {
     db.collection('posts').get()
@@ -54,6 +55,32 @@ exports.getPost = (req, resp) => {
         })
         .catch(error => {
             console.error('Something went wrong: ', error)
+            resp.status(500).json({error: error.code})
+        })
+}
+
+exports.commentPost = (req, resp) => {
+    if(isEmpty(req.body.body)) resp.status(500).json({error: 'Must not be empty'})
+    
+    let newComment = {
+        body: req.body.body,
+        createdAt: new Date().toIsoString(),
+        postId: req.params.postId,
+        userHandle: req.user.handle,
+        userImage: req.user.imgageUrl
+    }
+
+    db.doc(`/posts/${req.params.postId}`).get()
+        .then(doc => {
+            if(!doc.exists) {
+                return resp.status(404).json({ error: 'Post not found'})
+            }
+
+            return db.collection('comments').add(newComment)
+        })
+        .then(() => resp.json(newComment)) 
+        .catch(error => {
+            console.error(error)
             resp.status(500).json({error: error.code})
         })
 }

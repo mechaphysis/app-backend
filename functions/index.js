@@ -29,7 +29,7 @@ app.post('/post/:postId', getPost)
 app.post('/post/:postId', FBAuth, deletePost)
 app.post('/post', likePost)
 app.post('/post', unlikePost)
-app.post('/post', commentPost)
+app.post('/post/:postId/comment', commentPost)
 
 
 //Users routes:
