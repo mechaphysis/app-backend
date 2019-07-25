@@ -26,7 +26,7 @@ const  { FBAuth } = require('./util/middleware'
 app.get('/posts', getAllPosts)
 app.post('/post', FBAuth,addPost)
 app.post('/post/:postId', getPost)
-app.post('/post/:postId', FBAuth, deletePost)
+app.delete('/post/:postId', FBAuth, deletePost)
 app.post('/post/:postId', FBAuth, likePost)
 app.post('/post/:postId', FBAuth, unlikePost)
 app.post('/post/:postId/comment', commentPost)

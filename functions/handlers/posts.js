@@ -81,6 +81,9 @@ exports.commentPost = (req, resp) => {
                 return resp.status(404).json({ error: 'Post not found'})
             }
 
+            return doc.ref.update({commentCound: doc.data().commentCount + 1})
+        })
+        .then(() => {
             return db.collection('comments').add(newComment)
         })
         .then(() => resp.json(newComment)) 
@@ -94,7 +97,7 @@ exports.likePost = (req, resp) => {
     const likeDoc =  db.collection('likes').where('userHanlde', '==', req.user.handle)
         .where('postId', '==', req.params.postId).limit(1)
 
-    const postDoc = db.collection(`posts/${req.params.postId}`)
+    const postDoc = db.collection(`/posts/${req.params.postId}`)
 
     let postData = {}
 
@@ -140,7 +143,7 @@ exports.unlikePost = (req, resp) => {
     const likeDoc =  db.collection('likes').where('userHanlde', '==', req.user.handle)
     .where('postId', '==', req.params.postId).limit(1)
 
-const postDoc = db.collection(`posts/${req.params.postId}`)
+const postDoc = db.collection(`/posts/${req.params.postId}`)
 
 let postData = {}
 
@@ -179,3 +182,28 @@ postDoc.get()
 
 }
 
+
+exports.deletePost = (req, resp) => {
+    const doc = db.collection(`/posts/${req.params.postId}`)
+
+    doc.get()
+        .then(doc=> {
+            if(!doc.exists){
+                return resp.status(404).json({error: 'Not Found'})
+            }
+
+            if(doc.data().userHandle !==  req.user.handle) {
+                return resp.status(403).json({error: 'Unauthorized'})
+            } else {
+
+                return doc.delete()
+            }
+        })
+        .then(()=> {
+            return resp.json({message: 'Post deleted succesfully'})
+        })
+        .catch(error => {
+            console.error(error)
+            resp.status(500).json({error: error.code})
+        })
+}
