@@ -37,7 +37,7 @@ app.post('/signup', handleSignup)
 app.post('/login', handleLogin)
 app.post('/user/image', FBAuth, uploadImage)
 app.post('/user', FBAuth, addUserDetails)
-add.post('/user', FBAuth, getAuthUser)
+app.post('/user', FBAuth, getAuthUser)
 
 // Specify here the region for deploying function routes. otherwise it defaults to us-central1 region
 exports.api = functions.region('europe-west1').https.onRequest(app)
