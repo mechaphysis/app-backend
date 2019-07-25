@@ -50,23 +50,16 @@ const getImgUrl = (storageBucket, img) => {
     return storage_url
 }
 
-
-const checkWebSite = website => website.startsWith('http') ? website : `http://${website}`
-
-const addListOfValidatedInputs = (array, object) => array.forEach( (input) => {
-    if(!isEmpty(input)) object[`${input}`] = input
-}
-)
-
 const reduceUserDetails = (data) => {
 
     let userDetails =  {};
-
     let {bio, website, location} = data
     
-    let checkedWebsite = checkWebSite(website)
+    if(!isEmpty(bio)) userDetails.bio = bio
 
-    addListOfValidatedInputs([bio, checkedWebsite, location], userDetails)
+    if(!isEmpty(checkedWebsite)) userDetails.website = website.startsWith('http') ? website : `http://${website}`
+
+    if(!isEmpty(location)) userDetails.location = location
 
     return userDetails
 }
