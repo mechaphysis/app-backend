@@ -41,3 +41,7 @@ app.post('/user', FBAuth, getAuthUser)
 
 // Specify here the region for deploying function routes. otherwise it defaults to us-central1 region
 exports.api = functions.region('europe-west1').https.onRequest(app)
+
+//Handle notifications using firebase database triggers: 
+exports.createNotificationOnLike = createNotification('like')
+exports.createNotificationOnComment = createNotification('comment')

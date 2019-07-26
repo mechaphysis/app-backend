@@ -1,3 +1,5 @@
+const db = require('../util/admin')
+
 //Helper functions
 const isEmpty = (string) => string.trim() === '' ? true : false
 //Regexp check:
@@ -64,5 +66,34 @@ const reduceUserDetails = (data) => {
     return userDetails
 }
 
+const createNotification = (notificationType) => {
+    return functions.region('europe-west1')
+    .firestore.document(`/${notificationType}s/${id}`)
+        .onCreate((snapshot) => {
+            db.doc(`/posts/${snapshot.data().postId}`).get()
+            .then(doc => {
+                    // eslint-disable-next-line promise/always-return
+                    if(doc.exists){
+                    return db.doc(`/notifications/${snapshot.id}`).set({
+                        createdAt: new Date().toISOString,
+                        recipient: doc.data().userHandle,
+                        sender: snapshot.data().userHandle,
+                        type: notificationType,
+                        read: false,
+                        postId: doc.id
+                    })
+                }
+            })
+            .then(() => {
+                return; //void return as its only a database trigger, not an api endpoint
+            })
+                .catch(error => {
+                console.error(error)
+                return;
+            })
+    })
 
-module.exports = {validateSignUp, validateLogin, getImgUrl, reduceUserDetails}
+}
+
+
+module.exports = {validateSignUp, validateLogin, getImgUrl, reduceUserDetails, createNotification}
