@@ -17,6 +17,10 @@ const {
     getAuthUser,
  } = require('./handlers/users')
 
+const {
+    createNotification,
+    deleteNotification
+} = require('./handlers/notifications')
 //Middleware for protected routes
 const  { FBAuth } = require('./util/middleware'
 )
@@ -45,3 +49,4 @@ exports.api = functions.region('europe-west1').https.onRequest(app)
 //Handle notifications using firebase database triggers: 
 exports.createNotificationOnLike = createNotification('like')
 exports.createNotificationOnComment = createNotification('comment')
+exports.deleteNotificationOnUnlike = deleteNotification('like')
