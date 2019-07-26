@@ -144,8 +144,10 @@ exports.addUserDetails = (req, resp) => {
         .then(() => resp.json({message: 'User details added succesfully'}))
         .catch((error) => resp.status(500).json({ error: error.code}))
 }
-
-
+/**
+ * TO-DO:This is a complex query, 
+ * quite likely Firebase will ask to create an index for this function when deploying:
+ */
 exports.getAuthUser = (req, resp) => {
     let userData = {}
 
@@ -167,6 +169,22 @@ exports.getAuthUser = (req, resp) => {
                 userData.likes.push(doc.data())
             })
 
+            return db.collection('notifications').where('recipient', '==', req.user.handle)
+                .orderBy('createdAt', 'desc').limit(10).get()
+        })
+        .then( data => {
+            userData.notifications = []
+            data.forEach( doc => {
+                userData.notifications.push({
+                    recipient: doc.data().recipient,
+                    sender: doc.data().sender,
+                    createdAt: doc.data().createdAt,
+                    postId: doc.data().postId,
+                    type: doc.data().type,
+                    read: doc.data().read,
+                    notificationId: doc.id,
+                    })
+            })
             return resp.json(userData)
         })
         .catch(error => {
