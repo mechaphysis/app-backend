@@ -15,6 +15,8 @@ const {
     uploadImage, 
     addUserDetails, 
     getAuthUser,
+    getUserDetails,
+    markNotificationsAsRead
  } = require('./handlers/users')
 
 const {
@@ -42,6 +44,8 @@ app.post('/login', handleLogin)
 app.post('/user/image', FBAuth, uploadImage)
 app.post('/user', FBAuth, addUserDetails)
 app.post('/user', FBAuth, getAuthUser)
+app.get('/user/:handle', getUserDetails)
+app.post('/notifications', markNotificationsAsRead)
 
 // Specify here the region for deploying function routes. otherwise it defaults to us-central1 region
 exports.api = functions.region('europe-west1').https.onRequest(app)
