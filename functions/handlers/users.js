@@ -223,3 +223,21 @@ exports.getUserDetails = (req, resp) => {
             return resp.status(500).json({error: error.code})
         })
 }
+
+//We gonna use batch queries for this request as we are going to work with multiple entities from the database
+exports.markNotificationsAsRead = (req, resp) => {
+    let batch = db.batch();
+    req.body.forEach(notificationId => {
+        const notification = db.doc(`/notifications/${notificationId}`);
+        batch.update(notification, {read: true})
+    })
+    batch.commit()
+        .then(() => {
+            return resp.json({message: 'Notifications marked read'})
+        })
+        .catch(error => {
+            console.error('Something went wrong: ', error)
+            return resp.status(500).json({error: error.code})
+        })
+
+}
