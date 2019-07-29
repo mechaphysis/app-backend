@@ -192,3 +192,34 @@ exports.getAuthUser = (req, resp) => {
             resp.status(500).json({error: error.code})
         })
 }
+
+exports.getUserDetails = (req, resp) => {
+    let userData = {}
+    db.doc(`/users/${req.params.handle}`).get()
+        .then(doc => {
+            if(doc.exists){
+                userData.user = doc.data()
+                return db.collection('posts').where('userHandle', '==', req.params.handle)
+                    .orderBy('createdAt', 'desc').get()
+            } else {
+                return resp.status(404).json({error: 'User Not found '})
+            }
+        })
+        .then(data => {
+            userData.posts = []
+            data.forEach( doc => userData.posts.push({
+                body: doc.data().body,
+                createdAt: doc.data().createdAt,
+                userHandle: doc.data().userHandle,
+                userImage: doc.data().userImage,
+                likeCount: doc.data().likeCount,
+                cpmmentCount: doc.data().cpmmentCount,
+                postId: doc.id
+            }))
+            return resp.json(userData)
+        })
+        .catch(error => {
+            console.error('Something went wrong: ', error)
+            return resp.status(500).json({error: error.code})
+        })
+}
