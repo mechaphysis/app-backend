@@ -1,8 +1,9 @@
 const db = require('../util/admin')
+const functions = require('firebase-functions');
 
 const createNotification = (notificationType) => {
     return functions.region('europe-west1')
-    .firestore.document(`/${notificationType}s/${id}`)
+    .firestore.document(`/${notificationType}s/{id}`)
         .onCreate((snapshot) => {
             db.doc(`/posts/${snapshot.data().postId}`).get()
             .then(doc => {
@@ -31,7 +32,7 @@ const createNotification = (notificationType) => {
 
 const deleteNotification = (notificationType) => {
     return functions.region('europe-west1')
-    .firestore.document(`/${notificationType}s/${id}`)
+    .firestore.document(`/${notificationType}s/{id}`)
         .onDelete((snapshot) => {
             db.doc(`/notifications/${snapshot.id}`).delete()
             .then(() => {
