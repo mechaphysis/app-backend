@@ -31,11 +31,11 @@ const  { FBAuth } = require('./util/middleware'
 //Posts routes:
 app.get('/posts', getAllPosts)
 app.post('/post', FBAuth,addPost)
-app.post('/post/:postId', getPost)
+app.get('/post/:postId', getPost)
 app.delete('/post/:postId', FBAuth, deletePost)
-app.post('/post/:postId', FBAuth, likePost)
-app.post('/post/:postId', FBAuth, unlikePost)
-app.post('/post/:postId/comment', commentPost)
+app.post('/post/:postId/like', FBAuth, likePost)
+app.post('/post/:postId/unlike', FBAuth, unlikePost)
+app.post('/post/:postId/comment', FBAuth, commentPost)
 
 
 //Users routes:
