@@ -66,4 +66,4 @@ const reduceUserDetails = (data) => {
     return userDetails
 }
 
-module.exports = {validateSignUp, validateLogin, getImgUrl, reduceUserDetails}
+module.exports = {isEmpty, validateSignUp, validateLogin, getImgUrl, reduceUserDetails}
