@@ -92,10 +92,10 @@ exports.uploadImage = (req, resp) => {
     const os = require('os')
     const fs = require('fs')
 
-    const busboy = new BusBoy({ headers:  req.header})
+    const busboy = new BusBoy({ headers:  req.headers})
 
     let imgFileName
-    let imgToBeUploaded
+    let imgToBeUploaded = {}
     busboy.on('file', (fieldname, file, filename, encoding, mimetype) => {
         
         if (mimetype !== 'image/jpeg' && mimetype !== 'image/png') {
@@ -112,7 +112,7 @@ exports.uploadImage = (req, resp) => {
 
     });
     busboy.on('finish', () => {
-        admin.storage().bucket.upload(imgToBeUploaded.filePath, {
+        admin.storage().bucket().upload(imgToBeUploaded.filePath, {
             resumable: false,
             metadata: {
                 metadata: {
