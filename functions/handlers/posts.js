@@ -20,7 +20,7 @@ exports.addPost = (req, resp) => {
     const newPost = {
         body: req.body.body,
         userHandle: req.user.handle ,
-        userImage: req.user.imgageUrl, 
+        userImage: req.user.imageUrl, 
         createdAt: new Date().toISOString(),
         likeCount: 0,
         commentCount: 0
@@ -41,14 +41,16 @@ exports.addPost = (req, resp) => {
 
 exports.getPost = (req, resp) => {
     let postData = {}
-    db.collection(`/posts/${req.params.postId}`).get()
+    db.doc(`/posts/${req.params.postId}`).get()
         .then( doc => {
-            if(!doc.exists) resp.status(404).json({error: 'Post not found'})
+            if(!doc.exists) {
+                resp.status(404).json({error: 'Post not found'})
+            }
 
             postData = doc.data()
             postData.postId = doc.id
 
-            return collection('comments').where('postId', '==', req.param.postId).get()
+            return db.collection('comments').where('postId', '==', req.params.postId).get()
         })
         .then( data => {
             postData.comments = []
@@ -69,10 +71,10 @@ exports.commentPost = (req, resp) => {
     
     let newComment = {
         body: req.body.body,
-        createdAt: new Date().toIsoString(),
+        createdAt: new Date().toISOString(),
         postId: req.params.postId,
         userHandle: req.user.handle,
-        userImage: req.user.imgageUrl
+        userImage: req.user.imageUrl
     }
 
     db.doc(`/posts/${req.params.postId}`).get()
@@ -81,7 +83,7 @@ exports.commentPost = (req, resp) => {
                 return resp.status(404).json({ error: 'Post not found'})
             }
 
-            return doc.ref.update({commentCound: doc.data().commentCount + 1})
+            return doc.ref.update({commentCount: doc.data().commentCount + 1})
         })
         .then(() => {
             return db.collection('comments').add(newComment)
@@ -94,10 +96,10 @@ exports.commentPost = (req, resp) => {
 }
 
 exports.likePost = (req, resp) => {
-    const likeDoc =  db.collection('likes').where('userHanlde', '==', req.user.handle)
+    const likeDoc =  db.collection('likes').where('userHandle', '==', req.user.handle)
         .where('postId', '==', req.params.postId).limit(1)
 
-    const postDoc = db.collection(`/posts/${req.params.postId}`)
+    const postDoc = db.doc(`/posts/${req.params.postId}`)
 
     let postData = {}
 
@@ -140,10 +142,10 @@ exports.likePost = (req, resp) => {
 
 exports.unlikePost = (req, resp) => {
 
-    const likeDoc =  db.collection('likes').where('userHanlde', '==', req.user.handle)
+    const likeDoc =  db.collection('likes').where('userHandle', '==', req.user.handle)
     .where('postId', '==', req.params.postId).limit(1)
 
-const postDoc = db.collection(`/posts/${req.params.postId}`)
+const postDoc = db.doc(`/posts/${req.params.postId}`)
 
 let postData = {}
 
