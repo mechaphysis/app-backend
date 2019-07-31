@@ -1,5 +1,5 @@
 const functions = require('firebase-functions');
-const app = require('express')()
+const app = require('express')();
 
 //Handlers
 const { getAllPosts, 
@@ -21,8 +21,11 @@ const {
 
 const {
     createNotification,
-    deleteNotification
+    deleteNotification,
+    triggerUpdateOfImageUrl,
+    triggerDeleteOfAllPostRelatedData
 } = require('./handlers/notifications')
+
 //Middleware for protected routes
 const  { FBAuth } = require('./util/middleware'
 )
@@ -54,3 +57,8 @@ exports.api = functions.region('europe-west1').https.onRequest(app)
 exports.createNotificationOnLike = createNotification('like')
 exports.createNotificationOnComment = createNotification('comment')
 exports.deleteNotificationOnUnlike = deleteNotification('like')
+
+exports.onUserImageChange = triggerUpdateOfImageUrl()
+
+
+exports.onPostDelete = triggerDeleteOfAllPostRelatedData()
