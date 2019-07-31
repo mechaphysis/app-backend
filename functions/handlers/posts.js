@@ -187,9 +187,9 @@ postDoc.get()
 
 
 exports.deletePost = (req, resp) => {
-    const doc = db.doc(`/posts/${req.params.postId}`)
+    const document = db.doc(`/posts/${req.params.postId}`)
     
-    doc.get()
+    document.get()
         .then(doc=> {
             if(!doc.exists){
                 return resp.status(404).json({error: 'Not Found'})
@@ -199,7 +199,7 @@ exports.deletePost = (req, resp) => {
                 return resp.status(403).json({error: 'Unauthorized'})
             } else {
 
-                return doc.delete()
+                return document.delete()
             }
         })
         .then(()=> {

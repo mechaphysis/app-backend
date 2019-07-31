@@ -1,4 +1,4 @@
-const db = require('../util/admin')
+const { db }= require('../util/admin')
 const functions = require('firebase-functions');
 
 const createNotification = (notificationType) => {
@@ -10,7 +10,7 @@ const createNotification = (notificationType) => {
                         // eslint-disable-next-line promise/always-return
                         if(doc.exists && doc.data().userHandle !== snapshot.data().userHandle){
                         return db.doc(`/notifications/${snapshot.id}`).set({
-                            createdAt: new Date().toISOString,
+                            createdAt: new Date().toISOString(),
                             recipient: doc.data().userHandle,
                             sender: snapshot.data().userHandle,
                             type: notificationType,
