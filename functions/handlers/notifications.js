@@ -55,6 +55,8 @@ const triggerUpdateOfImageUrl = () => {
                         })
                         return batch.commit()
                     })
+            } else {
+                return true
             }
         })
 

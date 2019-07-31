@@ -46,7 +46,7 @@ app.post('/signup', handleSignup)
 app.post('/login', handleLogin)
 app.post('/user/image', FBAuth, uploadImage)
 app.post('/user', FBAuth, addUserDetails)
-app.post('/user', FBAuth, getAuthUser)
+app.get('/user', FBAuth, getAuthUser)
 app.get('/user/:handle', getUserDetails)
 app.post('/notifications', markNotificationsAsRead)
 
