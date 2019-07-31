@@ -7,9 +7,10 @@ exports.getAllPosts = (req, resp) => {
         let posts = []
         data.forEach(doc => posts.push({
             postId: doc.id,
-            body: doc.data().body,
+            body: doc.data().body, 
             userHandle: doc.data().userHandle,
-            createdAt: doc.data().createdAt
+            createdAt: doc.data().createdAt,
+            userImage: doc.data().userImage
         }))
         return resp.json(posts)
     })
@@ -67,7 +68,7 @@ exports.getPost = (req, resp) => {
 }
 
 exports.commentPost = (req, resp) => {
-    if(isEmpty(req.body.body)) resp.status(500).json({error: 'Must not be empty'})
+    if(isEmpty(req.body.body)) resp.status(500).json({comment: 'Must not be empty'})
     
     let newComment = {
         body: req.body.body,
@@ -186,8 +187,8 @@ postDoc.get()
 
 
 exports.deletePost = (req, resp) => {
-    const doc = db.collection(`/posts/${req.params.postId}`)
-
+    const doc = db.doc(`/posts/${req.params.postId}`)
+    
     doc.get()
         .then(doc=> {
             if(!doc.exists){

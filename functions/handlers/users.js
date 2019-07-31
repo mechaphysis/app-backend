@@ -55,7 +55,7 @@ exports.handleSignup = (req, resp) => {
         })
         .catch(error => {
             console.error('Something went wrong: ', error)
-            return resp.status(500).json({ error: error.message })
+            return resp.status(500).json({ general: 'Something went wrong. Please try again' })
         })
 
 }
