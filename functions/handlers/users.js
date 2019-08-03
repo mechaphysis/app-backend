@@ -30,7 +30,7 @@ exports.handleSignup = (req, resp) => {
     return db.doc(`/users/${newUser.handle}`).get()
         .then(docSnapShot => {
             if(docSnapShot.exists) {
-                return resp.status(400).json({handle: 'This user handle is already taken'})
+                return resp.status(400).json({errors: {handle: 'This user handle is already taken'}})
              } else {
                 return firebase.auth().createUserWithEmailAndPassword(newUser.email, newUser.password)
              }
@@ -68,7 +68,7 @@ exports.handleLogin = (req, resp) => {
 
     //validate
     const  { valid, errors } = validateLogin(user)
-    if(!valid) return resp.status(500).json({errors})
+    if(!valid) return resp.status(400).json({errors})
 
     return firebase.auth().signInWithEmailAndPassword(user.email, user.password)
         .then(data => {
@@ -77,8 +77,8 @@ exports.handleLogin = (req, resp) => {
         .then( token => resp.json({ token }))
         .catch(error => {
             console.error('Something went wrong: ', error)
-            if (error.code === '/auth/password') {
-                return resp.status(403).json({general: 'Wrong credentials. Please try again'})
+            if (error.code === 'auth/wrong-password') {
+                return resp.status(403).json({errors: {general: 'Wrong credentials. Please try again'}})
             } else {
                 return resp.status(500).json({error: error})
 
