@@ -151,11 +151,10 @@ exports.addUserDetails = (req, resp) => {
 exports.getAuthUser = (req, resp) => {
     let userData = {}
 
-    db.doc(`/user/${req.user.handle}`).get()
+    db.doc(`/users/${req.user.handle}`).get()
         .then( doc => {
             if(doc.exists){ //Check otherwise crashes
                 userData.credentials = doc.data()
-
             }
             /**
              * If the collection doesn't exist it will return and empty array as response. 
