@@ -59,7 +59,7 @@ const reduceUserDetails = (data) => {
     
     if(!isEmpty(bio)) userDetails.bio = bio
 
-    if(!isEmpty(checkedWebsite)) userDetails.website = website.startsWith('http') ? website : `http://${website}`
+    if(!isEmpty(website)) userDetails.website = website.startsWith('http') ? website : `http://${website}`
 
     if(!isEmpty(location)) userDetails.location = location
 
