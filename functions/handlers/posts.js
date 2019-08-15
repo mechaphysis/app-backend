@@ -20,6 +20,8 @@ exports.getAllPosts = (req, resp) => {
 }
 
 exports.addPost = (req, resp) => {
+    if(isEmpty(req.body.body)) resp.status(500).json({body: 'Must not be empty'})
+    
     const newPost = {
         body: req.body.body,
         userHandle: req.user.handle ,
